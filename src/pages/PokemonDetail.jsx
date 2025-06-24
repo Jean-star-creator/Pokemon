@@ -11,6 +11,7 @@ import {
   MovesList,
 } from '../styles/DetailStyles';
 import { ThemeContext } from '../contexts/ThemeContext';
+import { pokemonsMainPagePath } from '../globalVariables';
 
 const PokemonDetail = () => {
   // Obtém o nome do Pokémon dos parâmetros da URL
@@ -79,7 +80,8 @@ const PokemonDetail = () => {
         )})}
       </MovesList>
       {/* Botão para voltar para a página inicial */}
-      <HomeButton onClick={() => navigate('/')}>Voltar para a Lista</HomeButton>
+      {/* <HomeButton onClick={() => navigate('/')}>Voltar para a Lista</HomeButton> */}
+      <HomeButton onClick={() => navigate(`/${pokemonsMainPagePath}`)}>Voltar para a Lista</HomeButton>
     </DetailContainer>
   );
 };

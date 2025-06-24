@@ -3,6 +3,7 @@ import React from 'react';
 import { PokemonCardWrapper } from '../styles/ListStyles';
 import { useNavigate } from 'react-router-dom';
 import { usePokemonContext } from '../contexts/PokemonContext';
+import { pokemonDetailPagePath } from '../globalVariables';
 
 // Component to display a single Pokemon in the list
 const PokemonCard = ({ pokemon }) => {
@@ -13,7 +14,8 @@ const PokemonCard = ({ pokemon }) => {
   // Function to handle click on a Pokemon card
   const handleClick = () => {
     // Navigate to the detail page, passing the Pokemon name as a parameter
-    navigate(`/pokemon/${pokemon.name}`);
+    //navigate(`/pokemon/${pokemon.name}`);
+    navigate(`/${pokemonDetailPagePath}/${pokemon.name}`);
   };
 
 

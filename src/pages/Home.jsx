@@ -1,153 +1,104 @@
-/*
-// src/pages/Home.jsx
-import React, { useState, useEffect, useCallback } from 'react';
-import api from '../api'; // Certifique-se que este caminho está correto e api.js está configurado
-import PokemonCard from '../components/PokemonCard'; // Certifique-se que este caminho está correto
-import {
- ListContainer,
- PokemonGrid,
- LoadMoreButton,
-} from '../styles/ListStyles'; // Certifique-se que este caminho está correto
 
-const Home = () => {
- // Estado para armazenar a lista de Pokémons (agora com ID)
- const [pokemons, setPokemons] = useState([]);
- // Estado para gerenciar o offset para as chamadas da API
- const [offset, setOffset] = useState(0);
- // Estado para verificar se há mais Pokémons disponíveis
- const [hasMore, setHasMore] = useState(true);
- // Estado para gerenciar o estado de carregamento
- const [loading, setLoading] = useState(false);
- // Limite de Pokémons por requisição
- const LIMIT = 10; // Você pode ajustar este valor
-
- // Função para buscar Pokémons da API
- const fetchPokemons = useCallback(async (currentOffset) => {
-   // ALTERAÇÃO: Removida a guarda 'if (loading && currentOffset !== 0) return;' daqui.
-   // A verificação de 'loading' antes de chamar fetchPokemons (para 'load more')
-   // já é feita em handleLoadMore. Para a carga inicial, queremos que ela sempre execute.
-   // Manter 'loading' aqui com 'loading' fora das dependências do useCallback tornaria
-   // o valor de 'loading' aqui obsoleto (sempre o valor da primeira renderização).
-
-   setLoading(true);
-
-   try {
-     const response = await api.get(`/pokemon?limit=${LIMIT}&offset=${currentOffset}`);
-     const results = response.data.results;
-
-     // Mapeia os resultados para adicionar o ID numérico e manter as outras propriedades
-     const newPokemonsWithId = results.map(pokemon => {
-       const urlParts = pokemon.url.split('/');
-       const id = parseInt(urlParts[urlParts.length - 2], 10); // Extrai e converte ID para número
-       return {
-         ...pokemon, // Mantém 'name' e 'url'
-         id: id,     // Adiciona 'id' numérico
-       };
-     });
-
-     // Se for o carregamento inicial (offset 0), substitui a lista.
-     // Caso contrário (carregar mais), anexa os novos à lista existente.
-     setPokemons((prevPokemons) =>
-       currentOffset === 0 ? newPokemonsWithId : [...prevPokemons, ...newPokemonsWithId]
-     );
-
-     setHasMore(response.data.next !== null); // Verifica se há mais Pokémons para carregar
-   } catch (error) {
-     console.error('Erro ao buscar Pokémons:', error);
-     // Poderia adicionar um estado de erro aqui para mostrar uma mensagem ao usuário
-   } finally {
-     setLoading(false);
-   }
-   // ALTERAÇÃO: Removido 'loading' das dependências do useCallback.
-   // 'LIMIT' é incluído pois é uma variável do escopo do componente que é usada dentro do callback.
-   // Se LIMIT fosse uma constante global/módulo, as dependências poderiam ser [].
-   // As funções de atualização de estado (setPokemons, setLoading, setHasMore) são estáveis
-   // e não precisam ser listadas como dependências.
- }, [LIMIT]);
-
- // useEffect para buscar Pokémons quando o componente é montado
- useEffect(() => {
-   // A primeira carga não precisa verificar 'loading' pois é o estado inicial.
-   fetchPokemons(0); // Busca os primeiros Pokémons (offset 0)
- // ALTERAÇÃO: Com fetchPokemons agora estável (por não depender de 'loading'),
- // este useEffect só executará na montagem inicial (ou se 'LIMIT' mudasse,
- // o que recriaria 'fetchPokemons'). Isso previne o loop de carregamento.
- }, [fetchPokemons]); // Dependência: a função fetchPokemons memorizada
-
- // Função para lidar com o clique do botão "Carregar Mais"
- const handleLoadMore = () => {
-   if (!loading && hasMore) {
-     const nextOffset = offset + LIMIT;
-     setOffset(nextOffset); // Atualiza o offset para a próxima busca
-     fetchPokemons(nextOffset); // Busca o próximo conjunto de Pokémons com o novo offset
-   }
- };
-
- */
-
-
-//   return (
-//     <ListContainer>
-//       <h1>Lista de Pokémon</h1>
-//       {/* Exibe uma grade de cartões de Pokémon */}
-//       <PokemonGrid>
-//         {pokemons.map((pokemon) => (
-//           // Agora pokemon.id é um número único e pode ser usado como key
-//           <PokemonCard key={pokemon.id} pokemon={pokemon} />
-//         ))}
-//       </PokemonGrid>
-
-//       {/* Feedback de carregamento enquanto a lista inicial está sendo buscada e está vazia */}
-//       {loading && pokemons.length === 0 && <p>Carregando Pokémons...</p>}
-
-//       {/* Botão "Carregar Mais", desabilitado se estiver carregando ou não houver mais Pokémons */}
-//       {hasMore && !loading && pokemons.length > 0 && ( // Mostra apenas se houver mais, não estiver carregando e já tiver pokemons
-//         <LoadMoreButton onClick={handleLoadMore} disabled={loading}>
-//           Carregar Mais ({LIMIT})
-//         </LoadMoreButton>
-//       )}
-//       {/* Mostra o botão "Carregando..." apenas durante o "Carregar Mais" */}
-//       {hasMore && loading && pokemons.length > 0 && (
-//           <LoadMoreButton disabled={true}>
-//             Carregando...
-//           </LoadMoreButton>
-//       )}
-
-//       {!hasMore && pokemons.length > 0 && <p>Não há mais Pokémons para carregar!</p>}
-//     </ListContainer>
-//   );
-// };
-
-// export default Home;
-
-//---f---f-----f----f---f----f----f----f----f----f
-
-// src/pages/Home.jsx
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react'; // Removido useLayoutEffect
 import PokemonCard from '../components/PokemonCard';
 import {
   ListContainer,
   PokemonGrid,
   LoadMoreButton,
+  ButtonStyled
 } from '../styles/ListStyles';
-import { usePokemonContext } from '../contexts/PokemonContext'; // Importa o hook do contexto
-import { ThemeContext } from '../contexts/ThemeContext'
+import { usePokemonContext } from '../contexts/PokemonContext';
 import { Search } from '../components/Search';
+import { ThemeContext } from '../contexts/ThemeContext';
+//import { Button } from '../components/Button';
 
 const Home = () => {
-  const { currentTheme, setCurrentTheme } = useContext(ThemeContext);
-  // alterado devido a perda da lista de pokemons ao voltar neste componente
-  // Consome o estado e as funções do PokemonContext
-  const { pokemons, loading, hasMore, handleLoadMore,filteredPokemon } = usePokemonContext();
+  const { currentTheme } = useContext(ThemeContext);
+  const { pokemons, loading, hasMore, handleLoadMore, filteredPokemon, initialSearch, DEFAULT_INITIAL_LIMIT } = usePokemonContext();
 
-  // CRIAÇÃO DA SEÇÃO DO RETURN
+  /*
+    //  CRIAÇÃO DOS useEffects para ver os ciclos de vida do componente "Home"
+    // === Antes da Montagem (Before Mounting) ===
+    useLayoutEffect(()=> {
+      console.log("0. useLayoutEffect (Antes da Montagem) Equivale ao ComponentWillMount dos componentes de CLASSE")
+    }, [])
+  
+    // === Montagem (Mounting) ===
+    // O efeito com array de dependências vazio ([]) roda apenas na montagem
+    useEffect(() => {
+      console.log('1. useEffect (Montagem): Componente montado (no DOM)');
+  
+      // === Desmontagem (Unmounting) ===
+      // O retorno da função de efeito é a função de limpeza (cleanup)
+      return () => {
+        console.log('4. useEffect (Desmontagem): Componente prestes a ser desmontado (removido do DOM)');
+      };
+    }, []); // Array de dependências vazio significa que o efeito roda apenas uma vez na montagem e uma vez na desmontagem
+  
+    // === Atualização (Updating) ===
+    // O efeito que roda a cada renderização (sem array de dependências) ou
+    // quando as dependências mudam.
+    useEffect(() => {
+      console.log('2. useEffect (Atualização): Componente renderizado ou atualizado (props ou state mudaram)');
+      // Este efeito roda a cada renderização, a menos que você especifique dependências.
+    });
+  
+  
+  
+  
+  
+  
+  
+  
+    useEffect(() => {
+      return () => {
+        console.log(`2. useEffect (Atualização): qtde de pokemons da lista: ${pokemons.length}`);
+        localStorage.setItem("limitPokemons", JSON.stringify(pokemons.length))
+      }
+    },[pokemons]); 
+  
+    useLayoutEffect(()=> {
+      const limitPokemons = JSON.parse(localStorage.getItem("limitPokemons"));
+      console.log(`0. useLayoutEffect (Antes da Montagem): qtde de pokemons da lista: ${limitPokemons+10}`);
+    }, [])
+    
+  */
+
+
+  // CORREÇÃO: Efeito para salvar o tamanho da lista ao sair/recarregar a página
+  useEffect(() => {
+    // Função que será chamada quando o usuário tentar recarregar ou fechar a página
+    const handleBeforeUnload = () => {
+      // Apenas salva se a lista tiver pokémons, para não salvar "0"
+      if (pokemons.length > 0) {
+        console.log(`Saindo da página. Salvando a quantidade de pokémons: ${pokemons.length}`);
+        localStorage.setItem('pokemonListLength', JSON.stringify(pokemons.length));
+      }
+    };
+
+    // Adiciona o listener ao evento 'beforeunload' do navegador
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // A função de cleanup do useEffect é executada quando o componente é desmontado
+    // (por exemplo, ao navegar para outra rota na sua aplicação)
+    return () => {
+      console.log('Componente Home desmontado. Removendo listener.');
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+
+      // Também salvamos aqui para garantir que a navegação interna (SPA) funcione
+      handleBeforeUnload();
+    };
+
+    // A dependência [pokemons] garante que a função `handleBeforeUnload`
+    // dentro do listener sempre tenha acesso ao valor mais recente de `pokemons.length`.
+  }, [pokemons]);
+
+
+  // CRIAÇÃO DA SEÇÃO DO RETURN (NENHUMA MUDANÇA AQUI)
   return (
     <ListContainer style={{ color: currentTheme.color, backgroundColor: currentTheme.background }}>
-      {/* <ThemeTogglerButton/> */} {/* Mantido se você tiver */}
-      <Search /> {/* Adiciona o componente de busca */}
+      <Search />
       <h1>Lista de Pokemons({pokemons.length}):</h1>
-      {/* alterado devido a perda da lista de pokemons ao voltar neste componente */}
-      {/* Renderiza o Pokémon filtrado se houver, caso contrário, renderiza a lista completa */}
       {filteredPokemon ? (
         <PokemonGrid>
           <PokemonCard key={
@@ -163,20 +114,16 @@ const Home = () => {
                   <PokemonCard key={
                     pokemon.id
                   } pokemon={pokemon} />
-                ))
-            }
+                ))}
           </PokemonGrid>
 
-          {/* Feedback de carregamento enquanto a lista inicial está sendo buscada e está vazia */}
           {loading && pokemons.length === 0 && <p>Carregando Pokemons...</p>}
 
-          {/* Botão "Carregar Mais", desabilitado se estiver carregando ou não houver mais Pokémons */}
-          {hasMore && !loading && pokemons.length > 0 && ( // Mostra apenas se houver mais, não estiver carregando e já tiver pokemons
+          {hasMore && !loading && pokemons.length > 0 && (
             <LoadMoreButton onClick={handleLoadMore} disabled={loading}>
-              Carregar Mais (10)
+              Carregar Mais ({ DEFAULT_INITIAL_LIMIT})
             </LoadMoreButton>
           )}
-          {/* Mostra o botão "Carregando..." apenas durante o "Carregar Mais" */}
           {hasMore && loading && pokemons.length > 0 && (
             <LoadMoreButton disabled={true}>
               Carregando...
@@ -184,9 +131,14 @@ const Home = () => {
           )}
 
           {!hasMore && pokemons.length > 0 && <p>Não há mais Pokémons para carregar!</p>}
+
+          <ButtonStyled onClick={initialSearch}>
+            Carregar Do Inicio 
+          </ButtonStyled>
         </>
       )}
     </ListContainer>
   );
 };
-export default Home;
+
+export default Home; 

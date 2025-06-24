@@ -84,7 +84,7 @@ export const Search = () => {
         }
     }
     return (
-        <SearchContainer>
+        <SearchContainer >
             <input
                 type="text"
                 placeholder="Buscar Pokemon pelo nome..."
@@ -98,7 +98,7 @@ export const Search = () => {
                 onClick={handleSearch}
                 style={{ backgroundColor: currentTheme.buttonBackground }}
             >
-                Buscar Jean  Lindo
+                Buscar 
             </button>
             <button
                 onClick={handleClear}
